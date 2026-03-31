@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Restaurant Menu</title>
+</head>
+<body>
+
+<h2>Menu</h2>
+<div id="menu"></div>
+
+<h3>Total: ₹<span id="total">0</span></h3>
+<button onclick="placeOrder()">Order</button>
+
+<script>
+let total = 0;
+let selectedItems = [];
+
+const menu = [
+  {id:1, name:"Dosa", price:50},
+  {id:2, name:"Idli", price:30}
+];
+
+const menuDiv = document.getElementById("menu");
+
+menu.forEach(item => {
+  const btn = document.createElement("button");
+  btn.innerText = item.name + " ₹" + item.price;
+  btn.onclick = () => {
+    total += item.price;
+    selectedItems.push(item.name);
+    document.getElementById("total").innerText = total;
+  };
+  menuDiv.appendChild(btn);
+  menuDiv.appendChild(document.createElement("br"));
+});
+
+function placeOrder(){
+  fetch("https://properity2.app.n8n.cloud/webhook-test/restaurant-order", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({
+      items: selectedItems.join(", "),
+      total: total,
+      status: "Pending",
+      time: new Date().toLocaleString()
+    })
+  }).then(res => alert("Order Placed!"));
+}
+</script>
+
+</body>
+</html>
